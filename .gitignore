@@ -1,0 +1,6 @@
+*.o
+tags
+*.swo
+*.swp
+.*.swo
+.*.swp
