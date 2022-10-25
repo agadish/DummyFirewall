@@ -81,7 +81,7 @@ static int __init hw1secws_init(void)
     /* 1. Register input hook to accept all packets */
     /* 1.1. Init struct fields */
     g_input_hook.hook = hw1secws_hookfn_accept;
-    g_input_hook.hooknum = NF_IP_PRE_ROUTING;
+    g_input_hook.hooknum = NF_IP_LOCAL_IN;
     g_input_hook.pf = PF_INET;
     g_input_hook.priority = NF_IP_PRI_FIRST;
 
@@ -95,7 +95,7 @@ static int __init hw1secws_init(void)
     /* 2. Register forward hook to drop all packets */
     /* 2.1. Init struct fields */
     g_forward_hook.hook = hw1secws_hookfn_drop;
-    g_forward_hook.hooknum = NF_IP_PRE_ROUTING;
+    g_forward_hook.hooknum = NF_IP_FORWARD;
     g_forward_hook.pf = PF_INET;
     g_forward_hook.priority = NF_IP_PRI_FIRST;
 
