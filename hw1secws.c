@@ -45,8 +45,6 @@ static void log_drop(void)
     printk(KERN_INFO "*** Packet Dropped ***\n");
 }
 
-static bool_t is_source
-
 static unsigned int hw1secws_hookfn_accept(
     void *priv,
     struct sk_buff *skb,
