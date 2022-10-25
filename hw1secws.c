@@ -30,8 +30,8 @@ static unsigned int hw1secws_hookfn_drop(
 
 
 /*   G L O B A L S   */
-static struct nf_hooks_op g_input_hook;
-static struct nf_hooks_op g_forward_hook;
+static struct nf_hook_ops g_input_hook;
+static struct nf_hook_ops g_forward_hook;
 
 
 /*   F U N C T I O N S    I M P L E M E N T A T I O N S   */
