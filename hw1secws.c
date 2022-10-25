@@ -88,7 +88,7 @@ static int __init hw1secws_init(void)
     g_input_hook.priority = NF_IP_PRI_FIRST;
 
     /* 1.2. Register hook */
-    result_register_hook = nf_register_hook(&g_input_hook);
+    result_register_hook = nf_register_net_hook(&init_net, &g_input_hook);
     if (0 != result_register_hook) {
         result = result_register_hook;
         goto l_cleanup;
@@ -102,7 +102,7 @@ static int __init hw1secws_init(void)
     g_forward_hook.priority = NF_IP_PRI_FIRST;
 
     /* 2.2. Register hook */
-    result_register_hook = nf_register_hook(&g_forward_hook);
+    result_register_hook = nf_register_net_hook(&init_net, &g_forward_hook);
     if (0 != result_register_hook) {
         result = result_register_hook;
         goto l_cleanup;
@@ -117,8 +117,8 @@ l_cleanup:
 
 static void __exit hw1secws_exit(void)
 {
-    nf_unregister_hook(&g_input_hook);
-    nf_unregister_hook(&g_forward_hook);
+    nf_unregister_net_hook(&init_net, &g_input_hook);
+    nf_unregister_net_hook(&init_net, &g_forward_hook);
 }
 
 
