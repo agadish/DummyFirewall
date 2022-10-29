@@ -149,10 +149,10 @@ static int __init hw1secws_init(void)
 
     /* 2. Register *OUTPUT* hook that *accepts* all the packets */
     /* 2.1. Init struct fields */
-    g_input_hook.hook = hw1secws_hookfn_accept;
-    g_input_hook.hooknum = NF_INET_LOCAL_OUT;
-    g_input_hook.pf = PF_INET;
-    g_input_hook.priority = NF_IP_PRI_FIRST;
+    g_output_hook.hook = hw1secws_hookfn_accept;
+    g_output_hook.hooknum = NF_INET_LOCAL_OUT;
+    g_output_hook.pf = PF_INET;
+    g_output_hook.priority = NF_IP_PRI_FIRST;
 
     /* 2.2. Register hook */
     result_register_hook = nf_register_net_hook(&init_net, &g_output_hook);
