@@ -80,7 +80,7 @@ static struct nf_hook_ops g_input_hook;
 /** 
  * @brief Netfilter hook for OUTPUT packet chain, aka packets sent by this machine
  */
-static struct nf_hook_ops g_input_hook;
+static struct nf_hook_ops g_output_hook;
 
 /** 
  * @brief Netfilter hook for FORWARD packet chain, aka packets that are neither destinated to this
