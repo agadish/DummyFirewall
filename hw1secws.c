@@ -161,7 +161,6 @@ static int __init hw1secws_init(void)
         goto l_cleanup;
     }
         
-        
     /* 3. Register *FORWARD* hook that *drops* all the packets */
     /* 3.1. Init struct fields */
     g_forward_hook.hook = hw1secws_hookfn_drop;
