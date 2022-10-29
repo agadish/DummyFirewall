@@ -18,8 +18,16 @@ MODULE_LICENSE("GPL");
 
 
 /*   F U N C T I O N S    D E C L A R A T I O N S   */
+/**
+ * @brief Init the module by registering all hooks
+ *
+ * @return 0 on succesful initialisation, non-zero value on error
+ */
 static int __init hw1secws_init(void);
 
+/**
+ * @brief Clean the module by unregistering all hooks
+ */
 static void __exit hw1secws_exit(void);
 
 /**
