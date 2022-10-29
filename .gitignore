@@ -4,3 +4,10 @@ tags
 *.swp
 .*.swo
 .*.swp
+.*.mk
+.*.cmd
+*.ko
+*.mod.c
+*.order
+Module.symvers
+.tmp_versions
