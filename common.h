@@ -1,3 +1,9 @@
+/**
+ * @file common.h
+ * @author Assaf Gadish
+ *
+ * @brief Common macros
+ */
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
