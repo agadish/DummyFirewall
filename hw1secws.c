@@ -7,6 +7,10 @@
 #include "common.h"
 
 
+/*   M A C R O S   */
+MODULE_LICENSE("GPL");
+
+
 /*   F U N C T I O N S    D E C L A R A T I O N S   */
 static int __init hw1secws_init(void);
 
