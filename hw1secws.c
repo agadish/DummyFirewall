@@ -41,7 +41,7 @@ static struct nf_hook_ops g_forward_hook;
 /*   F U N C T I O N S    I M P L E M E N T A T I O N S   */
 static void log_accept(void)
 {
-    printk(KERN_INFO "*** Packet accept ***\n");
+    printk(KERN_INFO "*** Packet Accepted ***\n");
 }
 
 static void log_drop(void)
