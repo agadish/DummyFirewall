@@ -10,7 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
-#include <string.h>
+#include <asm/string.h>
 
 #include "common.h"
 #include "hw2secws_stats.h"
@@ -22,8 +22,8 @@ MODULE_LICENSE("GPL");
 
 /*   M A C R O S   */
 #define INVALID_MAJOR_NUMBER (-1)
-#define CLASS_NAME ("hw2secws_class")
-#define CHAR_DEVICE_NAME ("hw2secws_char_device")
+#define CLASS_NAME "hw2secws_class"
+#define CHAR_DEVICE_NAME "hw2secws_char_device"
 #define SYSFS_DEVICE_NAME (CLASS_NAME "_" CHAR_DEVICE_NAME)
 #define USER_BUFFER_MAX_SIZE (PAGE_SIZE)
 
@@ -137,7 +137,7 @@ static hw2secws_stats_t g_stats = {
     .accepted_packets = 0,
     .dropped_packets = 0,
 };
-static bool_t g_has_device_file = FALSE;
+static bool_t g_has_sysfs_device = FALSE;
 
 static DEVICE_ATTR(sysfs_att, S_IWUSR | S_IRUGO , display, modify); 
 
@@ -239,7 +239,7 @@ register_hooks(void)
     result = 0;
 l_cleanup:
     if (0 != result) {
-        hw2secws_unergister_hooks();
+        unregister_hooks();
     }
 
     return result;
@@ -249,13 +249,11 @@ static int
 init_device(void)
 {
     int result = 0;
-    int result_register_hook = -1;
-    int result_register_chrdev = -1;
     int result_device_create_file = -1;
 
     /* 1. Create character device */
     g_major_number = register_chrdev(0, CHAR_DEVICE_NAME, &g_file_operations);
-    if (0 > device_id) {
+    if (0 > g_major_number) {
         result = -1;
         goto l_cleanup;
     }
@@ -273,16 +271,17 @@ init_device(void)
         result = -1;
         goto l_cleanup;
     }
+    g_has_sysfs_device = TRUE;
 
+    /* 4. Create sysfs file attributes */
     result_device_create_file = device_create_file(
         g_hw2secws_device,
-        (const struct device_attribute *)&dev_attr_sysfs_att.attr);
+        (const struct device_attribute *)&dev_attr_sysfs_att.attr
     );
     if (0 != result_device_create_file) {
         result = -1;
         goto l_cleanup;
     }
-    g_has_device_file = TRUE;
         
     /* Success */
     result = 0;
@@ -297,13 +296,13 @@ l_cleanup:
 static void
 clean_device(void)
 {
-    if (TRUE == g_has_device_file) {
-        device_remove_file(g_hw2secws_class, (const struct device_attribute *)&dev_attr_sysfs_att.attr);
-        g_has_device_file = FALSE;
-    }
     if (NULL != g_hw2secws_device) {
-        device_destroy(g_hw2secws_class, MKDEV(g_major_number, 0), 0);
+        device_remove_file(g_hw2secws_device, (const struct device_attribute *)&dev_attr_sysfs_att.attr);
         g_hw2secws_device = NULL;
+    }
+    if (TRUE == g_has_sysfs_device) {
+        device_destroy(g_hw2secws_class, MKDEV(g_major_number, 0));
+        g_has_sysfs_device = FALSE;
     }
 
     if (NULL != g_hw2secws_class) {
@@ -334,8 +333,8 @@ display(struct device *dev, struct device_attribute *attr, char *buf)
     UNUSED_ARG(dev);
     UNUSED_ARG(attr);
 
-    result_scnprintf = scnprintf(buf, PAGE_SIZE, "%lu,%lu\n", g_stats.accepted_packets,
-                                 g_stats.dropped_packets);
+    result_scnprintf = scnprintf(buf, PAGE_SIZE, "%lu,%lu\n", (unsigned long)g_stats.accepted_packets,
+                                 (unsigned long)g_stats.dropped_packets);
 
     return result_scnprintf;
 }
@@ -379,7 +378,7 @@ __init hw2secws_init(void)
 
     result = 0;
 l_cleanup:
-    if (0 != results) {
+    if (0 != result) {
         clean_device();
         unregister_hooks();
     }

@@ -8,7 +8,7 @@
 #define __COMMON_H__
 
 /*   I N C L U D E S   */
-#include <stdint.h>
+#include <linux/types.h>
 
 
 /*   M A C R O S   */

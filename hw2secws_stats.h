@@ -1,7 +1,7 @@
 #ifndef __HW2SECWS_STATS_H__
 #define __HW2SECWS_STATS_H__
 
-#include <stdint.h>
+#include <linux/types.h>
 
 #pragma pack(1)
 typedef struct hw2secws_stats_s {
