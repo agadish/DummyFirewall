@@ -192,9 +192,7 @@ hw2secws_hookfn_drop(
 static inline void
 zero_counters(void)
 {
-    g_stats.accepting
-    (void)memset(&g_stats, 0, sizeof(g_stats));;
-    printk(KERN_INFO "zero_counters, accepted=%lu dropped=%lu\n", (unsigned long)g_stats.accepted_packets, (unsigned long)g_stats.dropped_packets);
+    (void)memset(&g_stats, 0, sizeof(g_stats));
 }
 
 static int
