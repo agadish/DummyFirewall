@@ -25,7 +25,6 @@ MODULE_LICENSE("GPL");
 #define CLASS_NAME "hw2secws_class"
 #define CHAR_DEVICE_NAME "hw2secws_char_device"
 #define SYSFS_DEVICE_NAME (CLASS_NAME "_" CHAR_DEVICE_NAME)
-#define USER_BUFFER_MAX_SIZE (PAGE_SIZE)
 
 
 /*   F U N C T I O N S    D E C L A R A T I O N S   */
@@ -371,6 +370,7 @@ __init hw2secws_init(void)
         goto l_cleanup;
     }
 
+    /* 1. Init char device and sysfs device */
     result = init_device();
     if (0 != result) {
         goto l_cleanup;
