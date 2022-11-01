@@ -104,6 +104,9 @@ display(struct device *dev, struct device_attribute *attr, char *buf);
 static ssize_t
 modify(struct device *dev, struct device_attribute *attr, const char *buf, size_t count);
 
+static inline void
+zero_counters(void);
+
 
 /*   G L O B A L S   */
 /** 
@@ -186,53 +189,64 @@ hw2secws_hookfn_drop(
     return NF_DROP;
 }
 
+static inline void
+zero_counters(void)
+{
+    (void)memset(&g_stats, 0, sizeof(g_stats));;
+    printk(KERN_INFO "zero_counters, accepted=%lu dropped=%lu\n", (unsigned long)g_stats.accepted_packets, (unsigned long)g_stats.dropped_packets);
+}
+
 static int
 register_hooks(void)
 {
     int result = 0;
     int result_register_hook = -1;
 
-    /* 1. Register *INPUT* hook that *accepts* all the packets */
-    /* 1.1. Init struct fields */
+    /* 1. Zero counters */
+    zero_counters();
+
+    /* 2. Register *INPUT* hook that *accepts* all the packets */
+    /* 2.1. Init struct fields */
     g_input_hook.hook = hw2secws_hookfn_accept;
     g_input_hook.hooknum = NF_INET_LOCAL_IN;
     g_input_hook.pf = PF_INET;
     g_input_hook.priority = NF_IP_PRI_FIRST;
 
-    /* 1.2. Register hook */
+    /* 2.2. Register hook */
     result_register_hook = nf_register_net_hook(&init_net, &g_input_hook);
     if (0 != result_register_hook) {
         result = result_register_hook;
         goto l_cleanup;
     }
 
-    /* 2. Register *OUTPUT* hook that *accepts* all the packets */
-    /* 2.1. Init struct fields */
+    /* 3. Register *OUTPUT* hook that *accepts* all the packets */
+    /* 3.1. Init struct fields */
     g_output_hook.hook = hw2secws_hookfn_accept;
     g_output_hook.hooknum = NF_INET_LOCAL_OUT;
     g_output_hook.pf = PF_INET;
     g_output_hook.priority = NF_IP_PRI_FIRST;
 
-    /* 2.2. Register hook */
+    /* 3.2. Register hook */
     result_register_hook = nf_register_net_hook(&init_net, &g_output_hook);
     if (0 != result_register_hook) {
         result = result_register_hook;
         goto l_cleanup;
     }
         
-    /* 3. Register *FORWARD* hook that *drops* all the packets */
-    /* 3.1. Init struct fields */
+    /* 4. Register *FORWARD* hook that *drops* all the packets */
+    /* 4.1. Init struct fields */
     g_forward_hook.hook = hw2secws_hookfn_drop;
     g_forward_hook.hooknum = NF_INET_FORWARD;
     g_forward_hook.pf = PF_INET;
     g_forward_hook.priority = NF_IP_PRI_FIRST;
 
-    /* 3.2. Register hook */
+    /* 4.2. Register hook */
     result_register_hook = nf_register_net_hook(&init_net, &g_forward_hook);
     if (0 != result_register_hook) {
         result = result_register_hook;
         goto l_cleanup;
     }
+
 
     /* Success */
     result = 0;
@@ -349,7 +363,7 @@ modify(struct device *dev, struct device_attribute *attr, const char *buf, size_
     }
 
     if ('0' == buf[0]) {
-        (void)memset(&g_stats, 0, sizeof(g_stats));
+        zero_counters();
     }
 
     /* Success */
@@ -370,7 +384,7 @@ __init hw2secws_init(void)
         goto l_cleanup;
     }
 
-    /* 1. Init char device and sysfs device */
+    /* 2. Init char device and sysfs device */
     result = init_device();
     if (0 != result) {
         goto l_cleanup;
