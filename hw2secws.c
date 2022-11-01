@@ -141,7 +141,7 @@ static hw2secws_stats_t g_stats = {
 };
 static bool_t g_has_sysfs_device = FALSE;
 
-static DEVICE_ATTR(sysfs_att, S_IWUSR | S_IRUGO , display, modify); 
+static DEVICE_ATTR(stats_accepted_dropped, S_IWUSR | S_IRUGO , display, modify); 
 
 
 /*   F U N C T I O N S    I M P L E M E N T A T I O N S   */
@@ -192,6 +192,7 @@ hw2secws_hookfn_drop(
 static inline void
 zero_counters(void)
 {
+    g_stats.accepting
     (void)memset(&g_stats, 0, sizeof(g_stats));;
     printk(KERN_INFO "zero_counters, accepted=%lu dropped=%lu\n", (unsigned long)g_stats.accepted_packets, (unsigned long)g_stats.dropped_packets);
 }
@@ -289,7 +290,7 @@ init_device(void)
     /* 4. Create sysfs file attributes */
     result_device_create_file = device_create_file(
         g_hw2secws_device,
-        (const struct device_attribute *)&dev_attr_sysfs_att.attr
+        (const struct device_attribute *)&dev_attr_stats_accepted_dropped.attr
     );
     if (0 != result_device_create_file) {
         result = -1;
@@ -310,7 +311,7 @@ static void
 clean_device(void)
 {
     if (NULL != g_hw2secws_device) {
-        device_remove_file(g_hw2secws_device, (const struct device_attribute *)&dev_attr_sysfs_att.attr);
+        device_remove_file(g_hw2secws_device, (const struct device_attribute *)&dev_attr_stats_accepted_dropped.attr);
         g_hw2secws_device = NULL;
     }
     if (TRUE == g_has_sysfs_device) {
@@ -355,19 +356,17 @@ display(struct device *dev, struct device_attribute *attr, char *buf)
 static ssize_t
 modify(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
-    ssize_t result = -1;
+    ssize_t result = 0;
 
     if (0 == count) {
-        result = -1;
         goto l_cleanup;
     }
 
     if ('0' == buf[0]) {
         zero_counters();
+        result = count;
     }
 
-    /* Success */
-    result = 0;
 l_cleanup:
 
     return result;
